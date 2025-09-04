@@ -2,7 +2,6 @@ from django.db import models
 
 class  Country(models.Model):
     """Модель стран производителей"""
-    __tablename__ = 'countries'
 
     name = models.CharField(max_length=30, verbose_name='Название страны', help_text='Введите название страны')
 
@@ -16,7 +15,6 @@ class  Country(models.Model):
 
 class Manufacture(models.Model):
     """Модель производителей"""
-    __tablename__ = 'manufactures'
 
     name = models.CharField(max_length=150, verbose_name='Название производителя', help_text='Введите название производителя')
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name='manufactures', help_text='Выберите страну производителя')
@@ -31,7 +29,6 @@ class Manufacture(models.Model):
     
 class Car(models.Model):
     """Модель автомобилей"""
-    __tablename__ = 'cars'
 
     name = models.CharField(max_length=100, verbose_name='Автомобиль', help_text='Введите название модели автомобиля')
     manufacture = models.ForeignKey(Manufacture, on_delete=models.CASCADE, related_name='cars', help_text='Выберите производителя')
@@ -44,11 +41,10 @@ class Car(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return f"{self} ({self.manufacture}), {self.release_year} - {self.end_year or 'н.в'}"
+        return f"{self.name} ({self.manufacture}), {self.release_year} - {self.end_year or 'н.в'}"
     
 class Comment(models.Model):
     """Модель комментариев"""
-    __tablename__ = 'comments'
 
     email = models.EmailField(verbose_name='Email автора')
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='comments', verbose_name='Автомобиль')
