@@ -1,0 +1,17 @@
+### Базовые переменные
+@base_url = http://localhost:8000/api
+
+### Экспорт в csv
+GET {{base_url}}/cars/export/csv/
+
+### Экспорт в excel
+GET {{base_url}}/cars/export/xlsx/
+
+### Проверка основных endpoints
+GET {{base_url}}/cars/
+###
+GET {{base_url}}/countries/
+###
+GET {{base_url}}/manufactures/ 
+###
+GET {{base_url}}/comments/
