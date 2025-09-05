@@ -1,17 +1,104 @@
 ### Базовые переменные
 @base_url = http://localhost:8000/api
+@content_type = application/json
+@token = fb7234589fb29847fboqsdn4738bcsdcjf
 
-### Экспорт в csv
-GET {{base_url}}/cars/export/csv/
-
-### Экспорт в excel
-GET {{base_url}}/cars/export/xlsx/
-
-### Проверка основных endpoints
-GET {{base_url}}/cars/
-###
+### Получить все страны
 GET {{base_url}}/countries/
-###
-GET {{base_url}}/manufactures/ 
-###
+
+### Получить всех производителей
+GET {{base_url}}/manufactures/
+
+### Получить все автомобили
+GET {{base_url}}/cars/
+
+### Получить все комментарии
 GET {{base_url}}/comments/
+
+### Экспорт стран в csv
+GET {{base_url}}/countries/export/
+
+### Экспорт стран в xlsx
+GET {{base_url}}/countries/export/?format=xlsx
+
+### Экспорт производителей в csv
+GET {{base_url}}/manufactures/export/
+
+### Экспорт производителей в xlsx
+GET {{base_url}}/manufactures/export/?format=xlsx
+
+### Экспорт автомобилей в csv
+GET {{base_url}}/cars/export/
+
+### Экспорт автомобилей в xlsx
+GET {{base_url}}/cars/export/?format=xlsx
+
+### Экспорт комментариев в csv
+GET {{base_url}}/comments/export/
+
+### Экспорт комментариев в xlsx
+GET {{base_url}}/comments/export/?format=xlsx
+
+### Создать страну с токеном
+POST {{base_url}}/countries/
+Authorization: Token {{token}}
+Content-Type: {{content_type}}
+
+{
+  "name": "Германия"
+}
+
+### Создать производителя с токеном
+POST {{base_url}}/manufactures/
+Authorization: Token {{token}}
+Content-Type: {{content_type}}
+
+{
+  "name": "BMW",
+  "country": 12
+}
+
+### Создать автомобиль с токеном
+POST {{base_url}}/cars/
+Authorization: Token {{token}}
+Content-Type: {{content_type}}
+
+{
+  "name": "X5",
+  "manufacture": 17,
+  "release_year": 1999
+}
+
+### Создать комментарий без токена
+POST {{base_url}}/comments/
+Content-Type: {{content_type}}
+
+{
+  "email": "test@example.com",
+  "car": 11,
+  "comment_text": "Отличный автомобиль! Очень комфортный и надежный."
+}
+
+### Удалить комментарий с токеном
+DELETE {{base_url}}/comments/10/
+Authorization: Token {{token}}
+
+### Обновить страну с токеном
+PUT {{base_url}}/countries/11/
+Authorization: Token {{token}}
+Content-Type: {{content_type}}
+
+{
+  "name": "Germany Updated"
+}
+
+### Попытка создать страну без токена (должен быть 403)
+POST {{base_url}}/countries/
+Content-Type: {{content_type}}
+
+{
+  "name": "США"
+}
+
+### Попытка удалить комментарий без токена (должен быть 403)
+DELETE {{base_url}}/comments/1/

@@ -3,7 +3,7 @@ from django.db import models
 class  Country(models.Model):
     """Модель стран производителей"""
 
-    name = models.CharField(max_length=30, verbose_name='Название страны', help_text='Введите название страны')
+    name = models.CharField(max_length=30, verbose_name='Название страны', help_text='Введите название страны', unique=True)
 
     class Meta:
         verbose_name = 'Страна'
@@ -16,7 +16,7 @@ class  Country(models.Model):
 class Manufacture(models.Model):
     """Модель производителей"""
 
-    name = models.CharField(max_length=150, verbose_name='Название производителя', help_text='Введите название производителя')
+    name = models.CharField(max_length=150, verbose_name='Название производителя', help_text='Введите название производителя', unique=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name='manufactures', help_text='Выберите страну производителя')
 
     class Meta:
@@ -30,7 +30,7 @@ class Manufacture(models.Model):
 class Car(models.Model):
     """Модель автомобилей"""
 
-    name = models.CharField(max_length=100, verbose_name='Автомобиль', help_text='Введите название модели автомобиля')
+    name = models.CharField(max_length=100, verbose_name='Автомобиль', help_text='Введите название модели автомобиля', unique=True)
     manufacture = models.ForeignKey(Manufacture, on_delete=models.CASCADE, related_name='cars', help_text='Выберите производителя')
     release_year = models.PositiveIntegerField(verbose_name='Год начала выпуска')
     end_year = models.PositiveIntegerField(verbose_name='Год окончания выпуска', null=True, blank=True, help_text='Оставьте поле пустым, если автомобиль еще выпускается')

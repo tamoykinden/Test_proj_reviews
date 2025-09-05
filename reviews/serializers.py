@@ -1,59 +1,79 @@
 from rest_framework import serializers
 from .models import Country, Manufacture, Car, Comment
+from django.core.exceptions import ValidationError
 
 class CountrySerializer(serializers.ModelSerializer):
-    """Сериализатор для модели Country"""
     manufactures = serializers.SerializerMethodField() # Требование: При запросе страны на стороне сериализатора добавить производителей в выдачу, которые ссылаются на нее
+
 
     class Meta:
         model = Country
         fields = ['id', 'name', 'manufactures']
 
     def get_manufactures(self, obj):
-        """Возвращает список производителей страны"""
-        return [manufacture.name for manufacture in obj.manufactures.all()] # по related_name
+        if hasattr(obj, 'manufactures'):
+            return [manufacture.name for manufacture in obj.manufactures.all()]
+        return []
+
+    def validate_name(self, value):
+        """Валидация названия страны с учетом уникальности."""
+        value = value.strip()
+        # Проверяю, существует ли страна с таким названием (игнорируя регистр)
+        if Country.objects.filter(name__iexact=value).exists():
+            raise serializers.ValidationError("Страна с таким названием уже существует")
+        return value
     
 class ManufactureSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Manufacture"""
-    country_name = serializers.CharField(source='country.name', read_only=True) # Требование: При запросе производителя добавлять страну
-    cars = serializers.SerializerMethodField() # Требование: Добавлять автомобили
-    comments_count = serializers.SerializerMethodField() # Требование: Добавлять количество комментариев
+    country_name = serializers.CharField(source='country.name', read_only=True)
+    cars = serializers.SerializerMethodField()
+    comments_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Manufacture
-        fields = ('id', 'name', 'country_name', 'cars', 'comments_count')
+        fields = ('id', 'name', 'country', 'country_name', 'cars', 'comments_count')  # Добавил 'country'
 
     def get_cars(self, obj):
-        """Возвращает список автомобилей этого производителя."""
         return [car.name for car in obj.cars.all()]
 
     def get_comments_count(self, obj):
-        """Возвращает общее количество комментариев ко всем автомобилям производителя."""
         total_comments = 0
         for car in obj.cars.all():
             total_comments += car.comments.count()
         return total_comments
+
+    def validate_name(self, value):
+        """Валидация названия производителя с учетом уникальности."""
+        value = value.strip()
+        if Manufacture.objects.filter(name__iexact=value).exists():
+            raise serializers.ValidationError("Производитель с таким названием уже существует.")
+        return value
+
     
 class CarSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Car"""
-    manufacture_name = serializers.StringRelatedField() # Требование: При запросе автомобиля добавить производителя
-    comments = serializers.SerializerMethodField() # Требование: Добавить комментарии
-    comments_count = serializers.SerializerMethodField() # Требование: Добавить количество комментариев
+    manufacture_name = serializers.CharField(source='manufacture.name', read_only=True)
+    comments = serializers.SerializerMethodField()
+    comments_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Car
-        fields = ('id', 'name', 'manufacture_name', 'release_year', 'end_year', 
-                 'comments', 'comments_count')
+        fields = ('id', 'name', 'manufacture', 'manufacture_name', 'release_year', 'end_year', 
+                 'comments', 'comments_count')  # Добавил 'manufacture'
 
     def get_comments(self, obj):
-        """Возвращает текст комментариев к автомобилю."""
-        # Получаем последние комментарии сначала
         comments = obj.comments.all().order_by('-created_at')
         return [comment.comment_text for comment in comments]
 
     def get_comments_count(self, obj):
-        """Возвращает количество комментариев для автомобиля."""
         return obj.comments.count()
+
+    def validate_name(self, value):
+        """Валидация названия автомобиля с учетом уникальности."""
+        value = value.strip()
+        if Car.objects.filter(name__iexact=value).exists():
+            raise serializers.ValidationError("Автомобиль с таким названием уже существует.")
+        return value
 
 
 class CommentSerializer(serializers.ModelSerializer):

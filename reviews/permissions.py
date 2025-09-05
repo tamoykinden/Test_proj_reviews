@@ -4,7 +4,7 @@ from rest_framework import permissions
 class HasAPIAccessToken(permissions.BasePermission):
     """
     Permission для проверки валидного токена доступа.
-    Ожидает токен в заголовке Authorization: Token <token_here>
+    Простая проверка кастомного токена из настроек.
     """
     
     def has_permission(self, request, view):
@@ -12,7 +12,7 @@ class HasAPIAccessToken(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
             
-        # Проверяю токен для изменяющих операций (POST, PUT, PATCH, DELETE)
+        # Проверяю наш кастомный токен из заголовка
         auth_header = request.headers.get('Authorization', '')
         
         if not auth_header.startswith('Token '):
@@ -21,4 +21,10 @@ class HasAPIAccessToken(permissions.BasePermission):
         token = auth_header[6:].strip()  # Убираю 'Token ' из начала строки
         
         # Использую токен из настроек Django
-        return token == settings.API_ACCESS_TOKEN
+        expected_token = getattr(settings, 'API_ACCESS_TOKEN', None)
+        
+        if not expected_token:
+            # Если токен не настроен, разрешаю все
+            return True
+            
+        return token == expected_token
