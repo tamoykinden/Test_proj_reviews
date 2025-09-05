@@ -1,0 +1,15 @@
+# Виртуальное окружение
+venv/
+# Git
+.git/
+.gitignore
+# Кэш Python
+__pycache__/
+*.pyc
+# Системные файлы macOS
+.DS_Store
+# IDE
+.idea/
+.vscode/
+# Файл пример env
+.env-example

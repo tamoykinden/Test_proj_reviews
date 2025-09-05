@@ -1,0 +1,45 @@
+services:
+  # Сервис с именем "db" (база данных PostgreSQL)
+  db:
+    image: postgres:15 # Официальный образ PostgreSQL 13 версии
+    environment: # Переменные окружения для PostgreSQL
+      POSTGRES_DB: ${DB_NAME} # Имя базы данных (берется из .env)
+      POSTGRES_USER: ${DB_USER} # Пользователь (берется из .env)
+      POSTGRES_PASSWORD: ${DB_PASSWORD}  # Пароль (берется из .env)
+    volumes: # Постоянное хранилище для данных
+      - postgres_data:/var/lib/postgresql/data  # Сохраняю данные в volume
+    ports: # Пробрасываю порты на хост
+      - "5432:5432" # Локальный порт 5432 → порт 5432 в контейнере (доступ с хоста)
+    env_file: # Подключаю файл с переменными
+      - .env # Использую переменные из .env файла
+
+  # Сервис с именем "web" (Django приложение)
+  web:
+    build: . # Сборка образа из Dockerfile в текущей директории
+    command: >  # Команда запуска (многострочная)
+      sh -c "sleep 5 &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes: # Синхронизация файлов
+      - .:/app # Текущая папка → папка /app в контейнере (изменения синхронизируются)
+    ports: # Проброс портов
+      - "8000:8000" # Локальный порт 8000 → порт 8000 в контейнере (доступ к приложению)
+    environment: # Переменные окружения для Django
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=${DB_NAME} # Имя БД (подстановка из .env)
+      - DB_USER=${DB_USER} # Пользователь БД (подстановка из .env)
+      - DB_PASSWORD=${DB_PASSWORD}  # Пароль БД (подстановка из .env)
+      - DB_HOST=db # Хост БД
+      - DB_PORT=5432 # Порт БД - стандартный порт PostgreSQL
+      - SECRET_KEY=${SECRET_KEY}  # Секретный ключ Django (из .env)
+      - DEBUG=${DEBUG} # Режим отладки (из .env)
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}  # Разрешенные хосты (из .env)
+      - API_ACCESS_TOKEN=${API_ACCESS_TOKEN}  # Токен доступа API (из .env)
+    depends_on: # Зависимости между сервисами
+      - db  # Сначала запустить "db", потом "web"
+    env_file: # Подключаю файл с переменными
+      - .env # Используем переменные из .env файла
+
+# Постоянные хранилища данных
+volumes:
+  postgres_data:

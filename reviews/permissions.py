@@ -12,7 +12,7 @@ class HasAPIAccessToken(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
             
-        # Проверяю наш кастомный токен из заголовка
+        # Проверяю кастомный токен из заголовка
         auth_header = request.headers.get('Authorization', '')
         
         if not auth_header.startswith('Token '):
