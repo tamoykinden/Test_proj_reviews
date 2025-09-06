@@ -84,6 +84,15 @@ python3 manage.py runserver
 7. Проверка работы
 Откройте: http://localhost:8000/api/countries/
 
+8. Для Docker
+Остановить контейнеры:
+
+ docker-compose down
+
+Пересобрать: 
+
+docker-compose up --build
+
 ### Использование API
 Аутентификация
 Для операций изменения данных (POST, PUT, DELETE) требуется токен доступа. Токен передается в заголовке запроса:
