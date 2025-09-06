@@ -75,17 +75,19 @@ createdb -u username db_test_task
 python3 manage.py makemigrations
 
 python manage.py migrate
-
-1. Создание суперпользователя
+5. Создание суперпользователя
 python manage.py createsuperuser
 
-1. Запуск сервера
-python3 manage.py runserver
+Вставьте ваш токен в requests.http
 
-1. Проверка работы
+@token = ваш токен
+
+6. Запуск сервера
+python3 manage.py runserver
+7. Проверка работы
 Откройте: http://localhost:8000/api/countries/
 
-1. Для Docker
+8. Для Docker
 Остановить контейнеры:
 
  docker-compose down

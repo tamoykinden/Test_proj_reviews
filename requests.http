@@ -1,7 +1,7 @@
 ### Базовые переменные
 @base_url = http://localhost:8000/api
 @content_type = application/json
-@token = fb7234589fb29847fboqsdn4738bcsdcjf
+@token = your_token
 
 ### Получить все страны
 GET {{base_url}}/countries/
