@@ -56,7 +56,7 @@ pip install -r requirements.txt
 
 - DB_PASSWORD=пароль пользователя для бд
 
-- DB_HOST=db
+- DB_HOST=localhost (для локального), db(для Docker)
 
 - DB_PORT=5432
 
