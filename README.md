@@ -75,22 +75,27 @@ createdb -u username db_test_task
 python3 manage.py makemigrations
 
 python manage.py migrate
+
 5. Создание суперпользователя
+
 python manage.py createsuperuser
 
-Вставьте ваш токен в requests.http
+6. Вставьте ваш токен в requests.http
 
 @token = ваш токен
 
-6. Запуск сервера
+7. Запуск сервера
+
 python3 manage.py runserver
-7. Проверка работы
+
+8. Проверка работы
 Откройте: http://localhost:8000/api/countries/
 
-8. Для Docker
+9. Для Docker
+
 Остановить контейнеры:
 
- docker-compose down
+docker-compose down
 
 Пересобрать: 
 
@@ -104,11 +109,13 @@ Authorization: ваш_токен
 
 #### Примеры HTTP запросов
 Получение списка стран:
+
 GET http://localhost:8000/api/countries/
 
 Создание новой страны (требуется токен):
 
 POST http://localhost:8000/api/countries/
+
 Authorization: Token your_api_access_token_here
 Content-Type: application/json
 
@@ -117,13 +124,17 @@ Content-Type: application/json
 }
 
 Экспорт данных в Excel:
+
 GET http://localhost:8000/api/countries/export/xlsx/
 
 Экспорт данных в CSV:
+
 GET http://localhost:8000/api/countries/export/csv/
 
 Создание комментария (публичный доступ):
+
 POST http://localhost:8000/api/comments/
+
 Content-Type: application/json
 
 {
