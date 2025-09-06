@@ -67,7 +67,8 @@ pip install -r requirements.txt
 4. Настройка базы данных:
 
 - Установите PostgreSQL и создайте базу данных
-createdb db_test_task
+
+createdb -u username db_test_task
 
 - Применение миграций
 
@@ -75,16 +76,16 @@ python3 manage.py makemigrations
 
 python manage.py migrate
 
-5. Создание суперпользователя
+1. Создание суперпользователя
 python manage.py createsuperuser
 
-6. Запуск сервера
+1. Запуск сервера
 python3 manage.py runserver
 
-7. Проверка работы
+1. Проверка работы
 Откройте: http://localhost:8000/api/countries/
 
-8. Для Docker
+1. Для Docker
 Остановить контейнеры:
 
  docker-compose down
