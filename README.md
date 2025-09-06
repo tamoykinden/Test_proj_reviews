@@ -44,32 +44,32 @@ pip install -r requirements.txt
 
 3. Создание файла .env с переменными окружения:
 
-SECRET_KEY=ключ_Django
+- SECRET_KEY=ключ_Django
 
-DEBUG=True
+- DEBUG=True
 
-DB_ENGINE=django.db.backends.postgresql
+- DB_ENGINE=django.db.backends.postgresql
 
-DB_NAME=db_test_task
+- DB_NAME=db_test_task
 
-DB_USER=имя_пользователя
+- DB_USER=имя_пользователя
 
-DB_PASSWORD=пароль пользователя для бд
+- DB_PASSWORD=пароль пользователя для бд
 
-DB_HOST=db
+- DB_HOST=db
 
-DB_PORT=5432
+- DB_PORT=5432
 
-API_ACCESS_TOKEN=ваш_токен
+- API_ACCESS_TOKEN=ваш_токен
 
-ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+- ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
 
-1. Настройка базы данных:
+4. Настройка базы данных:
 
-Установите PostgreSQL и создайте базу данных
+- Установите PostgreSQL и создайте базу данных
 createdb db_test_task
 
-Применение миграций
+- Применение миграций
 
 python3 manage.py makemigrations
 
