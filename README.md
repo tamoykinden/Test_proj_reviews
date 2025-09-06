@@ -32,7 +32,8 @@ Django REST Framework API для управления отзывами об ав
 ### Инструкция по запуску
 1. Создание виртуального окружения
 Linux/Mac:
-python -m venv venv
+python3 -m venv venv
+
 source venv/bin/activate
 
 Windows:
@@ -41,21 +42,37 @@ venv\Scripts\activate
 2. Установка зависимостей
 pip install -r requirements.txt
 
-3. Настройка базы данных:
+3. Создание файла .env с переменными окружения:
+
+SECRET_KEY=ключ_Django
+DEBUG=True
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=db_test_task
+DB_USER=имя_пользователя
+DB_PASSWORD=пароль пользователя для бд
+DB_HOST=db
+DB_PORT=5432
+API_ACCESS_TOKEN=ваш_токен
+ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+
+1. Настройка базы данных:
 
 Установите PostgreSQL и создайте базу данных
 createdb db_test_task
 
 Применение миграций
+
+python3 manage.py makemigrations
+
 python manage.py migrate
 
-4. Создание суперпользователя
+5. Создание суперпользователя
 python manage.py createsuperuser
 
-5. Запуск сервера
+6. Запуск сервера
 python3 manage.py runserver
 
-6. Проверка работы
+7. Проверка работы
 Откройте: http://localhost:8000/api/countries/
 
 ### Использование API
@@ -98,15 +115,15 @@ Content-Type: application/json
 Переменные окружения (.env)
 Файл .env в корне проекта со следующими параметрами:
 
-SECRET_KEY=your_django_secret_key_here
+SECRET_KEY=ключ_Django
 DEBUG=True
 DB_ENGINE=django.db.backends.postgresql
-DB_NAME=your_database_name
-DB_USER=your_database_user
-DB_PASSWORD=your_database_password
+DB_NAME=db_test_task
+DB_USER=имя_пользователя
+DB_PASSWORD=пароль пользователя для бд
 DB_HOST=db
 DB_PORT=5432
-API_ACCESS_TOKEN=your_api_access_token_here
+API_ACCESS_TOKEN=ваш_токен
 ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
 
 ### Docker Compose
