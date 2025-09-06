@@ -6,6 +6,7 @@ from openpyxl import Workbook
 from .models import Country, Manufacture, Car, Comment
 from .serializers import CountrySerializer, ManufactureSerializer, CarSerializer, CommentSerializer
 from .permissions import HasAPIAccessToken
+from rest_framework.permissions import AllowAny
 
 class ExportMixin:
     """Миксин для экспорта данных в CSV и XLSX форматах"""
@@ -44,141 +45,125 @@ class ExportMixin:
         return response
 
 class CountryViewSet(ExportMixin, viewsets.ModelViewSet):
-    """
-    ViewSet для просмотра и редактирования стран.
-    Доступ к изменяющим операциям только по токену.
-    """
     queryset = Country.objects.all().prefetch_related('manufactures')
     serializer_class = CountrySerializer
     permission_classes = [HasAPIAccessToken]
 
-    @action(detail=False, methods=['get'])
-    def export(self, request):
-        """Экспорт данных о странах"""
-        format_type = request.GET.get('format', 'csv')
+    @action(detail=False, methods=['get'], url_path='export/csv', permission_classes=[AllowAny])
+    def export_csv(self, request):
+        """Экспорт стран в CSV"""
         countries = Country.objects.all().prefetch_related('manufactures')
-        
         headers = ['ID', 'Country Name', 'Manufactures Count', 'Manufactures List']
         
         def country_row_callback(country):
             manufactures_list = ', '.join([m.name for m in country.manufactures.all()])
-            return [
-                country.id,
-                country.name,
-                country.manufactures.count(),
-                manufactures_list
-            ]
+            return [country.id, country.name, country.manufactures.count(), manufactures_list]
         
-        if format_type == 'xlsx':
-            return self.export_to_xlsx(countries, 'countries', headers, country_row_callback)
-        else:
-            return self.export_to_csv(countries, 'countries', headers, country_row_callback)
+        return self.export_to_csv(countries, 'countries', headers, country_row_callback)
+
+    @action(detail=False, methods=['get'], url_path='export/xlsx', permission_classes=[AllowAny])
+    def export_xlsx(self, request):
+        """Экспорт стран в Excel"""
+        countries = Country.objects.all().prefetch_related('manufactures')
+        headers = ['ID', 'Country Name', 'Manufactures Count', 'Manufactures List']
+        
+        def country_row_callback(country):
+            manufactures_list = ', '.join([m.name for m in country.manufactures.all()])
+            return [country.id, country.name, country.manufactures.count(), manufactures_list]
+        
+        return self.export_to_xlsx(countries, 'countries', headers, country_row_callback)
 
 class ManufactureViewSet(ExportMixin, viewsets.ModelViewSet):
-    """
-    ViewSet для просмотра и редактирования производителей.
-    Доступ к изменяющим операциям только по токену.
-    """
     queryset = Manufacture.objects.all().select_related('country').prefetch_related('cars')
     serializer_class = ManufactureSerializer
     permission_classes = [HasAPIAccessToken]
 
-    @action(detail=False, methods=['get'])
-    def export(self, request):
-        """Экспорт данных о производителях"""
-        format_type = request.GET.get('format', 'csv')
+    @action(detail=False, methods=['get'], url_path='export/csv', permission_classes=[AllowAny])
+    def export_csv(self, request):
+        """Экспорт производителей в CSV"""
         manufactures = Manufacture.objects.all().select_related('country').prefetch_related('cars')
-        
         headers = ['ID', 'Manufacture Name', 'Country', 'Cars Count', 'Total Comments Count']
         
         def manufacture_row_callback(manufacture):
             total_comments = sum(car.comments.count() for car in manufacture.cars.all())
-            return [
-                manufacture.id,
-                manufacture.name,
-                manufacture.country.name,
-                manufacture.cars.count(),
-                total_comments
-            ]
+            return [manufacture.id, manufacture.name, manufacture.country.name, manufacture.cars.count(), total_comments]
         
-        if format_type == 'xlsx':
-            return self.export_to_xlsx(manufactures, 'manufactures', headers, manufacture_row_callback)
-        else:
-            return self.export_to_csv(manufactures, 'manufactures', headers, manufacture_row_callback)
+        return self.export_to_csv(manufactures, 'manufactures', headers, manufacture_row_callback)
+
+    @action(detail=False, methods=['get'], url_path='export/xlsx', permission_classes=[AllowAny])
+    def export_xlsx(self, request):
+        """Экспорт производителей в Excel"""
+        manufactures = Manufacture.objects.all().select_related('country').prefetch_related('cars')
+        headers = ['ID', 'Manufacture Name', 'Country', 'Cars Count', 'Total Comments Count']
+        
+        def manufacture_row_callback(manufacture):
+            total_comments = sum(car.comments.count() for car in manufacture.cars.all())
+            return [manufacture.id, manufacture.name, manufacture.country.name, manufacture.cars.count(), total_comments]
+        
+        return self.export_to_xlsx(manufactures, 'manufactures', headers, manufacture_row_callback)
 
 class CarViewSet(ExportMixin, viewsets.ModelViewSet):
-    """
-    ViewSet для просмотра и редактирования автомобилей.
-    Доступ к изменяющим операциям только по токену.
-    """
     queryset = Car.objects.all().select_related('manufacture', 'manufacture__country').prefetch_related('comments')
     serializer_class = CarSerializer
     permission_classes = [HasAPIAccessToken]
 
-    @action(detail=False, methods=['get'])
-    def export(self, request):
-        """Экспорт данных об автомобилях"""
-        format_type = request.GET.get('format', 'csv')
+    @action(detail=False, methods=['get'], url_path='export/csv', permission_classes=[AllowAny])
+    def export_csv(self, request):
+        """Экспорт автомобилей в CSV"""
         cars = Car.objects.all().select_related('manufacture', 'manufacture__country').prefetch_related('comments')
-        
         headers = ['ID', 'Model', 'Manufacture', 'Country', 'Start Year', 'End Year', 'Comments Count']
         
         def car_row_callback(car):
-            return [
-                car.id,
-                car.name,
-                car.manufacture.name,
-                car.manufacture.country.name,
-                car.release_year,
-                car.end_year or 'Present',
-                car.comments.count()
-            ]
+            return [car.id, car.name, car.manufacture.name, car.manufacture.country.name, 
+                    car.release_year, car.end_year or 'Present', car.comments.count()]
         
-        if format_type == 'xlsx':
-            return self.export_to_xlsx(cars, 'cars', headers, car_row_callback)
-        else:
-            return self.export_to_csv(cars, 'cars', headers, car_row_callback)
+        return self.export_to_csv(cars, 'cars', headers, car_row_callback)
+
+    @action(detail=False, methods=['get'], url_path='export/xlsx', permission_classes=[AllowAny])
+    def export_xlsx(self, request):
+        """Экспорт автомобилей в Excel"""
+        cars = Car.objects.all().select_related('manufacture', 'manufacture__country').prefetch_related('comments')
+        headers = ['ID', 'Model', 'Manufacture', 'Country', 'Start Year', 'End Year', 'Comments Count']
+        
+        def car_row_callback(car):
+            return [car.id, car.name, car.manufacture.name, car.manufacture.country.name, 
+                    car.release_year, car.end_year or 'Present', car.comments.count()]
+        
+        return self.export_to_xlsx(cars, 'cars', headers, car_row_callback)
 
 class CommentViewSet(ExportMixin, viewsets.ModelViewSet):
-    """
-    ViewSet для комментариев.
-    Просмотр и добавление - публичные, изменение - по токену.
-    """
     queryset = Comment.objects.all().select_related('car', 'car__manufacture', 'car__manufacture__country')
     serializer_class = CommentSerializer
 
     def get_permissions(self):
-        """
-        Настраиваем права доступа в зависимости от действия:
-        - create, list, retrieve: публичный доступ
-        - update, partial_update, destroy: по токену
-        """
         if self.action in ['create', 'list', 'retrieve']:
             permission_classes = []
         else:
             permission_classes = [HasAPIAccessToken]
         return [permission() for permission in permission_classes]
 
-    @action(detail=False, methods=['get'])
-    def export(self, request):
-        """Экспорт данных о комментариях"""
-        format_type = request.GET.get('format', 'csv')
+    @action(detail=False, methods=['get'], url_path='export/csv', permission_classes=[AllowAny])
+    def export_csv(self, request):
+        """Экспорт комментариев в CSV"""
         comments = Comment.objects.all().select_related('car', 'car__manufacture', 'car__manufacture__country')
-        
         headers = ['ID', 'Email', 'Car', 'Manufacture', 'Country', 'Created At', 'Comment Text']
         
         def comment_row_callback(comment):
-            return [
-                comment.id,
-                comment.email,
-                comment.car.name,
-                comment.car.manufacture.name,
-                comment.car.manufacture.country.name,
-                comment.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                comment.comment_text[:100] + '...' if len(comment.comment_text) > 100 else comment.comment_text
-            ]
+            return [comment.id, comment.email, comment.car.name, comment.car.manufacture.name, 
+                    comment.car.manufacture.country.name, comment.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                    comment.comment_text[:100] + '...' if len(comment.comment_text) > 100 else comment.comment_text]
         
-        if format_type == 'xlsx':
-            return self.export_to_xlsx(comments, 'comments', headers, comment_row_callback)
-        else:
-            return self.export_to_csv(comments, 'comments', headers, comment_row_callback)
+        return self.export_to_csv(comments, 'comments', headers, comment_row_callback)
+
+    @action(detail=False, methods=['get'], url_path='export/xlsx', permission_classes=[AllowAny])
+    def export_xlsx(self, request):
+        """Экспорт комментариев в Excel"""
+        comments = Comment.objects.all().select_related('car', 'car__manufacture', 'car__manufacture__country')
+        headers = ['ID', 'Email', 'Car', 'Manufacture', 'Country', 'Created At', 'Comment Text']
+        
+        def comment_row_callback(comment):
+            return [comment.id, comment.email, comment.car.name, comment.car.manufacture.name, 
+                    comment.car.manufacture.country.name, comment.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                    comment.comment_text[:100] + '...' if len(comment.comment_text) > 100 else comment.comment_text]
+        
+        return self.export_to_xlsx(comments, 'comments', headers, comment_row_callback)
