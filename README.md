@@ -45,14 +45,23 @@ pip install -r requirements.txt
 3. Создание файла .env с переменными окружения:
 
 SECRET_KEY=ключ_Django
+
 DEBUG=True
+
 DB_ENGINE=django.db.backends.postgresql
+
 DB_NAME=db_test_task
+
 DB_USER=имя_пользователя
+
 DB_PASSWORD=пароль пользователя для бд
+
 DB_HOST=db
+
 DB_PORT=5432
+
 API_ACCESS_TOKEN=ваш_токен
+
 ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
 
 1. Настройка базы данных:
@@ -116,14 +125,23 @@ Content-Type: application/json
 Файл .env в корне проекта со следующими параметрами:
 
 SECRET_KEY=ключ_Django
+
 DEBUG=True
+
 DB_ENGINE=django.db.backends.postgresql
+
 DB_NAME=db_test_task
+
 DB_USER=имя_пользователя
+
 DB_PASSWORD=пароль пользователя для бд
+
 DB_HOST=db
+
 DB_PORT=5432
+
 API_ACCESS_TOKEN=ваш_токен
+
 ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
 
 ### Docker Compose
